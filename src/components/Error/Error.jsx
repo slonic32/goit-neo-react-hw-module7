@@ -1,6 +1,6 @@
 import css from "./Error.module.css";
 import { useSelector } from "react-redux";
-import { selectError } from "../../redux/selectors.js";
+import { selectError } from "../../redux/contactsSlice";
 
 export default function ErrorMessage() {
   const error = useSelector(selectError);

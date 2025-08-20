@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchContacts, addContact, deleteContact } from "./operations";
+import { fetchContacts, addContact, deleteContact } from "./contactsOps";
+import { createSelector } from "@reduxjs/toolkit";
+import { selectNameFilter } from "./filtersSlice";
 
 function handlePending(state) {
   state.loading = true;
@@ -17,7 +19,7 @@ const contactsSlice = createSlice({
     loading: false,
     error: null,
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       //get
       .addCase(fetchContacts.pending, handlePending)
@@ -41,7 +43,7 @@ const contactsSlice = createSlice({
         state.loading = false;
         state.error = null;
         const index = state.items.findIndex(
-          (contact) => contact.id === action.payload.id
+          contact => contact.id === action.payload.id
         );
         state.items.splice(index, 1);
       })
@@ -50,3 +52,24 @@ const contactsSlice = createSlice({
 });
 
 export const contactsReducer = contactsSlice.reducer;
+
+export function selectContacts(state) {
+  return state.contacts.items;
+}
+
+export function selectLoading(state) {
+  return state.contacts.loading;
+}
+
+export function selectError(state) {
+  return state.contacts.error;
+}
+
+export const selectFilteredContacts = createSelector(
+  [selectNameFilter, selectContacts],
+  (filter, contacts) => {
+    return contacts.filter(contact => {
+      return contact.name.toUpperCase().includes(filter.toUpperCase());
+    });
+  }
+);
